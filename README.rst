@@ -12,6 +12,30 @@ Install
     pip install https://github.com/Osmose/dxr-cmd.git
 
 
+Usage
+-----
+
+Adds a command called `dxr`:
+
+::
+
+    Run a search against DXR.
+
+    Usage: dxr [options] <query>...
+
+    Options:
+      --case-insensitive  Perform a case-insensitive search (searches are
+                          case-sensitive by default).
+      -h --help           Show this screen.
+      --limit=LIMIT       Maximum number of matches [default: 50]
+      --pager=PROGRAM     Direct output through PROGRAM.
+      --server=DOMAIN     DXR instance to send the search request to.
+                          [default: https://dxr.mozilla.org]
+      --tree=TREE         Code tree to search against.
+                          [default: mozilla-central]
+      -v --version        Show program version.
+
+
 Developer Setup
 ---------------
 
