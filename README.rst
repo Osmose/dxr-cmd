@@ -28,9 +28,12 @@ Adds a command called ``dxr``:
                           case-sensitive by default).
       -h --help           Show this screen.
       --limit=LIMIT       Maximum number of matches [default: 50]
+      --no-highlight      Disable syntax highlighting.
       --pager=PROGRAM     Direct output through PROGRAM.
       --server=DOMAIN     DXR instance to send the search request to.
                           [default: https://dxr.mozilla.org]
+      --style=STYLE       Name of Pygments style for syntax highlighting.
+                          [default: paraiso-dark]
       --tree=TREE         Code tree to search against.
                           [default: mozilla-central]
       -v --version        Show program version.

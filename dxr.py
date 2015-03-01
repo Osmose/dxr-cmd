@@ -8,13 +8,17 @@ Options:
                       case-sensitive by default).
   -h --help           Show this screen.
   --limit=LIMIT       Maximum number of matches [default: 50]
+  --no-highlight      Disable syntax highlighting.
   --pager=PROGRAM     Direct output through PROGRAM.
   --server=DOMAIN     DXR instance to send the search request to.
                       [default: https://dxr.mozilla.org]
+  --style=STYLE       Name of Pygments style for syntax highlighting.
+                      [default: paraiso-dark]
   --tree=TREE         Code tree to search against.
                       [default: mozilla-central]
   -v --version        Show program version.
 """
+import re
 import subprocess
 from HTMLParser import HTMLParser
 from math import ceil, log10
@@ -22,6 +26,9 @@ from math import ceil, log10
 import requests
 from blessings import Terminal
 from docopt import docopt
+from pygments import highlight
+from pygments.lexers import get_lexer_for_filename
+from pygments.formatters import Terminal256Formatter
 
 
 __version__ = '0.1'
@@ -56,6 +63,7 @@ def main():
         ))
     else:
         response_json = response.json()
+        formatter = Terminal256Formatter(style=arguments['--style'])
         for result in response_json['results']:
             output.append(t.green(result['path']))
 
@@ -65,10 +73,19 @@ def main():
             line_template = (u'  {t.yellow}{{lineno:>{lineno_len}}}{t.normal} {{line}}'
                              .format(t=t, lineno_len=lineno_len))
 
+            lexer = get_lexer_for_filename(result['path'])
             for line_result in result['lines']:
-                # Remove HTML entities and underline properly.
                 line = html_parser.unescape(line_result['line'])
-                line = line.replace('<b>', t.underline).replace('</b>', t.normal)
+
+                # Find highlight term and remove <b> tags.
+                match = re.search(r'<b>(?P<term>.+)</b>', line)
+                highlight_term = match.group('term') if match else None
+                line = line.replace('<b>', '').replace('</b>', '')
+
+                # Highlight normally and add underline.
+                if not arguments['--no-highlight']:
+                    line = highlight(line, lexer, formatter).strip('\n')
+                line = line.replace(highlight_term, t.underline_bold(highlight_term))
 
                 output.append(line_template.format(
                     lineno=unicode(line_result['line_number']),

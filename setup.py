@@ -32,6 +32,7 @@ setup(
         'blessings>=1.6',
         'requests>=2.5.1',
         'docopt>=0.6.2',
+        'pygments>=2.0.2',
     ],
     include_package_data=True,
     entry_points={
