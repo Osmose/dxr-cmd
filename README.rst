@@ -15,7 +15,7 @@ Install
 Usage
 -----
 
-Adds a command called `dxr`:
+Adds a command called ``dxr``:
 
 ::
 
