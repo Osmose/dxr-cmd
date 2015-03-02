@@ -29,6 +29,7 @@ from docopt import docopt
 from pygments import highlight
 from pygments.lexers import get_lexer_for_filename
 from pygments.formatters import Terminal256Formatter
+from pygments.util import ClassNotFound
 
 
 __version__ = '0.1'
@@ -64,36 +65,42 @@ def main():
     else:
         response_json = response.json()
         formatter = Terminal256Formatter(style=arguments['--style'])
-        for result in response_json['results']:
-            output.append(t.green(result['path']))
 
-            # Find maximum line number length so we can line them up.
-            max_log = max(log10(l['line_number']) for l in result['lines'])
-            lineno_len = int(ceil(max_log))
-            line_template = (u'  {t.yellow}{{lineno:>{lineno_len}}}{t.normal} {{line}}'
-                             .format(t=t, lineno_len=lineno_len))
-
-            lexer = get_lexer_for_filename(result['path'])
-            for line_result in result['lines']:
-                line = html_parser.unescape(line_result['line'])
-
-                # Find highlight term and remove <b> tags.
-                match = re.search(r'<b>(?P<term>.+)</b>', line)
-                highlight_term = match.group('term') if match else None
-                line = line.replace('<b>', '').replace('</b>', '')
-
-                # Highlight normally and add underline.
-                if not arguments['--no-highlight']:
-                    line = highlight(line, lexer, formatter).strip('\n')
-                line = line.replace(highlight_term, t.underline_bold(highlight_term))
-
-                output.append(line_template.format(
-                    lineno=unicode(line_result['line_number']),
-                    line=line
-                ))
-            output.append('')
-        else:
+        if len(response_json['results']) < 1:
             output.append('No results found.')
+        else:
+            for result in response_json['results']:
+                output.append(t.green(result['path']))
+
+                # Find maximum line number length so we can line them up.
+                max_log = max(log10(l['line_number']) for l in result['lines'])
+                lineno_len = int(ceil(max_log))
+                line_template = (u'  {t.yellow}{{lineno:>{lineno_len}}}{t.normal} {{line}}'
+                                 .format(t=t, lineno_len=lineno_len))
+
+                try:
+                    lexer = get_lexer_for_filename(result['path'])
+                except ClassNotFound:
+                    lexer = None  # No highlighting for you!
+
+                for line_result in result['lines']:
+                    line = html_parser.unescape(line_result['line'])
+
+                    # Find highlight term and remove <b> tags.
+                    match = re.search(r'<b>(?P<term>.+)</b>', line)
+                    highlight_term = match.group('term') if match else None
+                    line = line.replace('<b>', '').replace('</b>', '')
+
+                    # Highlight normally and add underline.
+                    if not arguments['--no-highlight'] and lexer:
+                        line = highlight(line, lexer, formatter).strip('\n')
+                    line = line.replace(highlight_term, t.underline_bold(highlight_term))
+
+                    output.append(line_template.format(
+                        lineno=unicode(line_result['line_number']),
+                        line=line
+                    ))
+                output.append('')
 
     output = '\n'.join(output)
     if arguments['--pager']:
