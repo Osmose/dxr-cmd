@@ -3,6 +3,7 @@ DXR Command-line Tool
 
 A small command-line tool for searching `DXR <https://dxr.mozilla.org/>`_.
 
+.. image:: https://osmose.github.io/dxr-cmd/dxr-cmd.gif
 
 Install
 -------
