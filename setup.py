@@ -2,7 +2,7 @@
 import codecs
 import os
 import re
-from setuptools import setup, find_packages
+from setuptools import setup
 
 
 def read(*parts):
@@ -23,7 +23,7 @@ setup(
     description='Command-line tool for querying DXR.',
     long_description=read('README.rst'),
     version=find_version('dxr.py'),
-    packages=find_packages(),
+    py_modules=['dxr'],
     author='Michael Kelly',
     author_email='me@mkelly.me',
     url='https://github.com/Osmose/dxr',
@@ -36,7 +36,7 @@ setup(
     ],
     include_package_data=True,
     entry_points={
-      'console_scripts':[
+      'console_scripts': [
           'dxr = dxr:main'
       ]
    }
