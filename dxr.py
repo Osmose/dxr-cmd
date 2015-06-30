@@ -6,6 +6,7 @@ Usage: dxr [options] <query>...
 Options:
   --case-insensitive  Perform a case-insensitive search (searches are
                       case-sensitive by default).
+  --grep              Grep-style "FILE:LINE" output
   -h --help           Show this screen.
   --limit=LIMIT       Maximum number of matches [default: 50]
   --no-highlight      Disable syntax highlighting.
@@ -63,6 +64,7 @@ def main():
             reason=response.reason,
         ))
     else:
+        grep_style = arguments['--grep']
         response_json = response.json()
         formatter = Terminal256Formatter(style=arguments['--style'])
 
@@ -70,13 +72,18 @@ def main():
             output.append('No results found.')
         else:
             for result in response_json['results']:
-                output.append(t.green(result['path']))
+                if not grep_style:
+                    output.append(t.green(result['path']))
 
                 # Find maximum line number length so we can line them up.
                 max_log = max(log10(l['line_number']) for l in result['lines'])
                 lineno_len = int(ceil(max_log))
-                line_template = (u'  {t.yellow}{{lineno:>{lineno_len}}}{t.normal} {{line}}'
-                                 .format(t=t, lineno_len=lineno_len))
+                if grep_style:
+                    line_template = (u'{t.green}{path}:{t.yellow}{{lineno}}{t.normal}:{{line}}'
+                                     .format(t=t, path=result['path']))
+                else:
+                    line_template = (u'  {t.yellow}{{lineno:>{lineno_len}}}{t.normal} {{line}}'
+                                     .format(t=t, lineno_len=lineno_len))
 
                 try:
                     lexer = get_lexer_for_filename(result['path'])
@@ -100,7 +107,8 @@ def main():
                         lineno=unicode(line_result['line_number']),
                         line=line
                     ))
-                output.append('')
+                if not grep_style:
+                    output.append('')
 
     output = '\n'.join(output)
     if arguments['--pager']:
