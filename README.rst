@@ -10,7 +10,7 @@ Install
 DXR-cmd is written in Python and can be installed using ``pip``, which comes
 included with most recent versions of Python::
 
-    pip install git+https://github.com/Osmose/dxr-cmd.git
+    pip install dxr-cmd
 
 
 Usage
