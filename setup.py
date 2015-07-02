@@ -33,6 +33,9 @@ setup(
         'requests>=2.5.1',
         'docopt>=0.6.2',
         'pygments>=2.0.2',
+        'pyopenssl>=0.13',
+        'ndg-httpsclient>=0.3.2',
+        'pyasn1>=0.1.6'
     ],
     include_package_data=True,
     entry_points={
