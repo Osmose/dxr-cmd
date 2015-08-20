@@ -52,11 +52,10 @@ def main():
     response = requests.get(url, params={
         'q': ' '.join(arguments['<query>']),
         'redirect': False,
-        'format': 'json',
         'case': not arguments['--case-insensitive'],
         'limit': limit,
         'offset': 0
-    })
+    }, headers={'Accept': 'application/json'})
 
     if response.status_code != 200:
         output.append('Search failed: DXR returned {status} {reason}'.format(
