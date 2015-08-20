@@ -33,7 +33,7 @@ from pygments.formatters import Terminal256Formatter
 from pygments.util import ClassNotFound
 
 
-__version__ = '0.2.1'
+__version__ = '0.2.2'
 
 
 def main():
