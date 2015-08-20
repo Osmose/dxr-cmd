@@ -51,8 +51,8 @@ def main():
                                           tree=arguments['--tree'])
     response = requests.get(url, params={
         'q': ' '.join(arguments['<query>']),
-        'redirect': False,
-        'case': not arguments['--case-insensitive'],
+        'redirect': 'false',
+        'case': 'false' if arguments['--case-insensitive'] else 'true',
         'limit': limit,
         'offset': 0
     }, headers={'Accept': 'application/json'})
